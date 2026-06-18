@@ -1,0 +1,36 @@
+name: WebCord Build Pipeline
+
+# triger po pushu na galaz ino_dev
+on:
+  push:
+    branches:
+      - ino_dev
+
+jobs:
+  build_and_archive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Pobranie kodu z repozytorium
+        uses: actions/checkout@v4
+
+      - name: 2. Konfiguracja środowiska Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 3. Instalacja zależności (NPM)
+        run: npm install
+
+      - name: 4. Proces budowania (Build)
+        # WebCord używa standardowych skryptów kompilacji. W przypadku gdyby build był zbyt "ciężki",
+        # zgodnie z instrukcją można zastąpić ten krok np. analizą jakości kodu: "npm run lint"
+        run: npm run build
+
+      - name: 5. Publikacja zbudowanego artefaktu
+        uses: actions/upload-artifact@v4
+        with:
+          name: webcord-artifact
+          # Wskazanie folderu wyjściowego kompilacji (zazwyczaj app, dist lub build)
+          path: app/
+          retention-days: 5
